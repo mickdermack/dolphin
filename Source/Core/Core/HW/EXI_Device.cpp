@@ -14,6 +14,7 @@
 #include "Core/HW/EXI_DeviceIPL.h"
 #include "Core/HW/EXI_DeviceMemoryCard.h"
 #include "Core/HW/EXI_DeviceMic.h"
+#include "Core/HW/EXI_DeviceModem.h"
 #include "Core/HW/Memmap.h"
 
 // --- interface IEXIDevice ---
@@ -132,6 +133,10 @@ IEXIDevice* EXIDevice_Create(TEXIDevices device_type, const int channel_num)
 
 	case EXIDEVICE_AGP:
 		result = new CEXIAgp(channel_num);
+		break;
+
+	case EXIDEVICE_MODEM:
+		result = new CEXIModem();
 		break;
 
 	case EXIDEVICE_NONE:

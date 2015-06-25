@@ -126,6 +126,8 @@
     <ClCompile Include="HW\EXI_DeviceIPL.cpp" />
     <ClCompile Include="HW\EXI_DeviceMemoryCard.cpp" />
     <ClCompile Include="HW\EXI_DeviceMic.cpp" />
+    <ClCompile Include="HW\EXI_DeviceModem.cpp" />
+    <ClCompile Include="HW\EXI_DeviceModem_ATParser.cpp" />
     <ClCompile Include="HW\GCKeyboard.cpp" />
     <ClCompile Include="HW\GCKeyboardEmu.cpp" />
     <ClCompile Include="HW\GCMemcard.cpp" />
@@ -336,6 +338,8 @@
     <ClInclude Include="HW\EXI_DeviceIPL.h" />
     <ClInclude Include="HW\EXI_DeviceMemoryCard.h" />
     <ClInclude Include="HW\EXI_DeviceMic.h" />
+    <ClInclude Include="HW\EXI_DeviceModem.h" />
+    <ClInclude Include="HW\EXI_DeviceModem_ATParser.h" />
     <ClInclude Include="HW\GCKeyboard.h" />
     <ClInclude Include="HW\GCKeyboardEmu.h" />
     <ClInclude Include="HW\GCMemcard.h" />

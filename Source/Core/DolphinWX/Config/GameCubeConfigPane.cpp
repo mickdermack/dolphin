@@ -31,6 +31,7 @@
 #define EXIDEV_MEMDIR_STR   _trans("GCI Folder")
 #define EXIDEV_MIC_STR      _trans("Mic")
 #define EXIDEV_BBA_STR      "BBA"
+#define EXIDEV_MODEM_STR    "Modem"
 #define EXIDEV_AGP_STR      "Advance Game Port"
 #define EXIDEV_AM_BB_STR    _trans("AM-Baseboard")
 #define EXIDEV_GECKO_STR    "USBGecko"
@@ -152,6 +153,7 @@ void GameCubeConfigPane::LoadGUIValues()
 	sp1_devices.Add(_(DEV_NONE_STR));
 	sp1_devices.Add(_(DEV_DUMMY_STR));
 	sp1_devices.Add(_(EXIDEV_BBA_STR));
+	sp1_devices.Add(_(EXIDEV_MODEM_STR));
 	sp1_devices.Add(_(EXIDEV_AM_BB_STR));
 
 	for (int i = 0; i < 3; ++i)
@@ -188,6 +190,9 @@ void GameCubeConfigPane::LoadGUIValues()
 			m_exi_devices[i]->SetStringSelection(sp1_devices[2]);
 			break;
 		case EXIDEVICE_AM_BASEBOARD:
+			m_exi_devices[i]->SetStringSelection(sp1_devices[4]);
+			break;
+		case EXIDEVICE_MODEM:
 			m_exi_devices[i]->SetStringSelection(sp1_devices[3]);
 			break;
 		case EXIDEVICE_DUMMY:
@@ -267,6 +272,8 @@ void GameCubeConfigPane::ChooseEXIDevice(const wxString& deviceName, int deviceN
 		tempType = EXIDEVICE_MIC;
 	else if (!deviceName.compare(EXIDEV_BBA_STR))
 		tempType = EXIDEVICE_ETH;
+	else if (!deviceName.compare(EXIDEV_MODEM_STR))
+		tempType = EXIDEVICE_MODEM;
 	else if (!deviceName.compare(EXIDEV_AGP_STR))
 		tempType = EXIDEVICE_AGP;
 	else if (!deviceName.compare(_(EXIDEV_AM_BB_STR)))

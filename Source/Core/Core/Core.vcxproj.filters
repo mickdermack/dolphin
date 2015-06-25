@@ -726,6 +726,12 @@
     <ClCompile Include="PowerPC\Jit64Common\Jit64AsmCommon.cpp">
       <Filter>PowerPC\Jit64Common</Filter>
     </ClCompile>
+    <ClCompile Include="HW\EXI_DeviceModem.cpp">
+      <Filter>HW %28Flipper/Hollywood%29\EXI - Expansion Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="HW\EXI_DeviceModem_ATParser.cpp">
+      <Filter>HW %28Flipper/Hollywood%29\EXI - Expansion Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BootManager.h" />
@@ -1240,6 +1246,12 @@
     </ClInclude>
     <ClInclude Include="PowerPC\Jit64Common\Jit64AsmCommon.h">
       <Filter>PowerPC\Jit64Common</Filter>
+    </ClInclude>
+    <ClInclude Include="HW\EXI_DeviceModem.h">
+      <Filter>HW %28Flipper/Hollywood%29\EXI - Expansion Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="HW\EXI_DeviceModem_ATParser.h">
+      <Filter>HW %28Flipper/Hollywood%29\EXI - Expansion Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
