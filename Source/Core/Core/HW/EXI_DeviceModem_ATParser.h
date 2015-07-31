@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -48,7 +47,7 @@ class CATParser
 {
 public:
 	CATParser(IATHandler* handler);
-	std::string HandleLine(const std::string& line);
+	std::string HandleLine(std::string line);
 
 private:
 	IATHandler* m_handler;

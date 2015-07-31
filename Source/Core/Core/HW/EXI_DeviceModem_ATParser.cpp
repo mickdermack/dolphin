@@ -2,6 +2,8 @@
 // Licensed under GPLv2+
 // Refer to the license.txt file included.
 
+#include <algorithm>
+
 #include "Core/HW/EXI_DeviceModem_ATParser.h"
 
 CATParser::CATParser(IATHandler* handler)
@@ -9,29 +11,14 @@ CATParser::CATParser(IATHandler* handler)
 {
 }
 
-std::string CATParser::HandleLine(const std::string& line)
+std::string CATParser::HandleLine(std::string line)
 {
-	// Actual command line starts with "AT" or "at"
-	size_t at_index = line.find("AT");
-
-	if (at_index == std::string::npos)
-	{
-		at_index = line.find("at");
-		if (at_index == std::string::npos)
-		{
-			INFO_LOG(SP1, "ATParser: HandleLine did not receive AT command with \"%s\"", line.c_str());
-			return "";
-		}
-	}
-
 	INFO_LOG(SP1, "ATParser: Parsing \"%s\"", line.c_str());
 
-	std::string new_line = line.substr(at_index + 2, line.length() - at_index - 2);
+	PreprocessString(&line);
 
-	PreprocessString(&new_line);
-
-	std::string::iterator iter = new_line.begin();
-	std::string::iterator end = new_line.end();
+	std::string::iterator iter = line.begin();
+	std::string::iterator end = line.end();
 
 	std::string result = "OK";
 
@@ -72,7 +59,7 @@ std::string CATParser::HandleLine(const std::string& line)
 	}
 	catch (parser_error& pe)
 	{
-		INFO_LOG(SP1, "ATParser: %s in input \"%s\" at character %d", pe.what(), new_line, iter - new_line.begin() + 1);
+		INFO_LOG(SP1, "ATParser: %s in input \"%s\" at character %d", pe.what(), line, iter - line.begin() + 1);
 		result = "ERROR";
 	}
 
@@ -87,13 +74,13 @@ void CATParser::ParseCommand(std::string::const_iterator& iter, const std::strin
 	if (*iter == '\\' || *iter == '&')
 	{
 		cmd.push_back(*iter);
-		++iter;
+		iter++;
 	}
 
 	if (iter != end && IsAlpha(*iter))
 	{
 		cmd.push_back(*iter);
-		++iter;
+		iter++;
 	}
 	else
 	{
@@ -131,14 +118,14 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 	std::vector<std::string> args;
 
 	// Skip over plus sign
-	++iter;
+	iter++;
 
 	SkipSpaces(iter, end);
 
 	if (iter != end && IsAlpha(*iter))
 	{
 		cmd.push_back(*iter);
-		++iter;
+		iter++;
 	}
 	else
 	{
@@ -156,7 +143,7 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 		else if (*iter == '?')
 		{
 			m_handler->GetExtendedParameter(cmd, error_status);
-			++iter;
+			iter++;
 			return;
 		}
 		else if (*iter == '=')
@@ -170,7 +157,7 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 		}
 
 		// *iter can't be space, because space is neither an ExtChar, nor a '?', nor a '='
-		++iter;
+		iter++;
 
 		// SkipSpaces won't go past end
 		SkipSpaces(iter, end);
@@ -185,7 +172,7 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 
 	if (*iter == '=')
 	{
-		++iter;
+		iter++;
 	}
 
 	if (iter == end)
@@ -207,7 +194,7 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 		{
 			if (*iter == ';')
 			{
-				++iter;
+				iter++;
 			}
 			else
 			{
@@ -249,12 +236,12 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 				{
 					arg.push_back(*iter);
 				}
-				++iter;
+				iter++;
 			}
 
 			if (iter != end && *iter != ';')
 			{
-				++iter;
+				iter++;
 			}
 		}
 
@@ -263,7 +250,7 @@ void CATParser::ParseExtendedCommand(std::string::const_iterator& iter, const st
 
 	if (iter != end && *iter == ';')
 	{
-		++iter;
+		iter++;
 	}
 
 	// It is impossible for the parser to determine whether an extended syntax command is to be
@@ -290,7 +277,7 @@ void CATParser::ParseStringConstant(std::string::const_iterator& iter, const std
 		if (*iter == '\\')
 		{
 			remaining_esc = 2;
-			++iter;
+			iter++;
 			continue;
 		}
 
@@ -306,7 +293,7 @@ void CATParser::ParseStringConstant(std::string::const_iterator& iter, const std
 			}
 
 			escape_code = escape_code * 16 + HexCharToInt(*iter);
-			--remaining_esc;
+			remaining_esc--;
 
 			if (remaining_esc == 0)
 			{
@@ -314,7 +301,7 @@ void CATParser::ParseStringConstant(std::string::const_iterator& iter, const std
 			}
 		}
 
-		++iter;
+		iter++;
 	}
 
 	if (remaining_esc > 0)
@@ -338,7 +325,7 @@ void CATParser::ParseSParameter(std::string::const_iterator& iter, const std::st
 	u16 value = 0;
 
 	// Skip S
-	++iter;
+	iter++;
 
 	SkipSpaces(iter, end);
 
@@ -371,12 +358,12 @@ void CATParser::ParseSParameter(std::string::const_iterator& iter, const std::st
 	}
 
 	// Skip over equals sign
-	++iter;
+	iter++;
 
 	if (iter == end)
 	{
 		// Implementation should decide what happens with ex. "ATS3=".
-		// V.250 says that 0 should be assumed or the value should stay unchanged.
+		// V.250 5.3.2 says that 0 should be assumed or an error should be caused.
 		// My Sony Ericsson W200i resets the parameter to default though.
 		// No idea what the actual modem adapter would do, but resetting seems sensible.
 		m_handler->ResetSParameter(param, error_status);
@@ -402,6 +389,9 @@ void CATParser::ParseDial(std::string::const_iterator& iter, const std::string::
 {
 	std::string dial_string;
 
+	// Skip over 'D'
+	iter++;
+
 	while (iter != end)
 	{
 		if (*iter == ';')
@@ -411,7 +401,7 @@ void CATParser::ParseDial(std::string::const_iterator& iter, const std::string::
 
 		dial_string.push_back(*iter);
 
-		++iter;
+		iter++;
 	}
 
 	m_handler->HandleDial(dial_string, error_status);
